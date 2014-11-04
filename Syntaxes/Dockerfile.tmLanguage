@@ -116,13 +116,23 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
+					<string>punctuation.whitespace.comment.leading.dockerfile</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>comment.line.number-sign.dockerfile</string>
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
 					<string>punctuation.definition.comment.dockerfile</string>
 				</dict>
 			</dict>
+			<key>comment</key>
+			<string>comment.line</string>
 			<key>match</key>
-			<string>^\s*(#).*$</string>
-			<key>name</key>
-			<string>comment.block.dockerfile</string>
+			<string>^(\s*)((#).*$\n?)</string>
 		</dict>
 	</array>
 	<key>scopeName</key>
