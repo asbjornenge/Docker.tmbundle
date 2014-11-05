@@ -13,36 +13,36 @@
 		<dict>
 			<key>captures</key>
 			<dict>
-				<key>0</key>
+				<key>1</key>
 				<dict>
 					<key>name</key>
 					<string>keyword.control.dockerfile</string>
 				</dict>
-				<key>1</key>
+				<key>2</key>
 				<dict>
 					<key>name</key>
 					<string>keyword.other.special-method.dockerfile</string>
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>^\s*(ONBUILD\s+)?(FROM|MAINTAINER|RUN|EXPOSE|ENV|ADD|VOLUME|USER|WORKDIR|COPY)\s</string>
+			<string>^\s*(?:(ONBUILD)\s+)?(FROM|MAINTAINER|RUN|EXPOSE|ENV|ADD|VOLUME|USER|WORKDIR|COPY)\s</string>
 		</dict>
 		<dict>
 			<key>captures</key>
 			<dict>
-				<key>0</key>
+				<key>1</key>
 				<dict>
 					<key>name</key>
 					<string>keyword.operator.dockerfile</string>
 				</dict>
-				<key>1</key>
+				<key>2</key>
 				<dict>
 					<key>name</key>
 					<string>keyword.other.special-method.dockerfile</string>
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>^\s*(ONBUILD\s+)?(CMD|ENTRYPOINT)\s</string>
+			<string>^\s*(?:(ONBUILD)\s+)?(CMD|ENTRYPOINT)\s</string>
 		</dict>
 		<dict>
 			<key>begin</key>
