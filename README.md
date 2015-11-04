@@ -15,6 +15,13 @@ You can install this bundle in TextMate by opening the preferences and going to 
 
 enjoy.
 
+### Changelog
+
+#### 1.0.0
+
+* Started doing version tags
+* Added `ARG` instruction
+
 ### License
 
 	Copyright 2014 Asbjorn Enge
