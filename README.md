@@ -19,7 +19,7 @@ enjoy.
 
 #### 1.0.1
 
-* Added `Docker.sublime-syntax`, converted from tmLanguage
+* Added `Dockerfile.sublime-syntax`, converted from tmLanguage
 
 #### 1.0.0
 
