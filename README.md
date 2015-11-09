@@ -17,6 +17,10 @@ enjoy.
 
 ### Changelog
 
+#### 1.0.1
+
+* Added `Docker.sublime-syntax`, converted from tmLanguage
+
 #### 1.0.0
 
 * Started doing version tags
