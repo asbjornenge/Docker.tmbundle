@@ -13,7 +13,8 @@ contexts:
     - include: comments
 
   newline:
-    - match: ([^\\\s])\s*(\n)
+    - match: ([^\\\s])\s*$
+      # scope: invalid.dockerfile
       # captures:
       #   1: invalid.begin.dockerfile
       #   2: invalid.begin.dockerfile
@@ -21,7 +22,7 @@ contexts:
         - include: keywords
         - include: quotes
         - include: comments
-        - match: (^\s*\S)
+        - match: (^\s*\S+)
           captures:
             1: invalid.end.dockerfile
           pop: true
