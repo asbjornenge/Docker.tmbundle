@@ -44,6 +44,14 @@ contexts:
         1: punctuation.definition.string.begin.dockerfile
       push:
         - meta_scope: string.quoted.double.dockerfile
+        - match: ([^\\\s"])(\s*$)
+#          captures:
+#            2: invalid.deprecated
+          push:
+            - match: (^\s*[^\s"]+)
+              captures:
+                1: invalid
+              pop: true
         - match: '"'
           captures:
             1: punctuation.definition.string.end.dockerfile
@@ -55,6 +63,14 @@ contexts:
         1: punctuation.definition.string.begin.dockerfile
       push:
         - meta_scope: string.quoted.single.dockerfile
+        - match: ([^\\\s'])(\s*$)
+#          captures:
+#            2: invalid.deprecated
+          push:
+            - match: (^\s*[^\s']+)
+              captures:
+                1: invalid
+              pop: true
         - match: "'"
           captures:
             1: punctuation.definition.string.end.dockerfile
