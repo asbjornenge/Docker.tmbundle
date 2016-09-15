@@ -7,19 +7,51 @@ file_extensions:
 scope: source.dockerfile
 contexts:
   main:
+    - include: keywords
+    - include: newline
+    - include: quotes
+    - include: comments
+
+  newline:
+    - match: ([^\\\s])\s*$
+      # scope: invalid.dockerfile
+      # captures:
+      #   1: invalid.begin.dockerfile
+      #   2: invalid.begin.dockerfile
+      push:
+        - include: keywords
+        - include: quotes
+        - include: comments
+        - match: (^\s*\S+)
+          captures:
+            1: invalid.end.dockerfile
+          pop: true
+  keywords:
     - match: ^\s*(?:(ONBUILD)\s+)?(ADD|ARG|COPY|ENV|EXPOSE|FROM|HEALTHCHECK|LABEL|MAINTAINER|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR)\s
       captures:
         1: keyword.control.dockerfile
         2: keyword.other.special-method.dockerfile
+      pop: true
     - match: ^\s*(?:(ONBUILD)\s+)?(CMD|ENTRYPOINT)\s
       captures:
         1: keyword.operator.dockerfile
         2: keyword.other.special-method.dockerfile
+      pop: true
+
+  quotes:
     - match: '"'
       captures:
         1: punctuation.definition.string.begin.dockerfile
       push:
         - meta_scope: string.quoted.double.dockerfile
+        - match: ([^\\\s"])(\s*$)
+#          captures:
+#            2: invalid.deprecated
+          push:
+            - match: (^\s*[^\s"]+)
+              captures:
+                1: invalid
+              pop: true
         - match: '"'
           captures:
             1: punctuation.definition.string.end.dockerfile
@@ -31,12 +63,21 @@ contexts:
         1: punctuation.definition.string.begin.dockerfile
       push:
         - meta_scope: string.quoted.single.dockerfile
+        - match: ([^\\\s'])(\s*$)
+#          captures:
+#            2: invalid.deprecated
+          push:
+            - match: (^\s*[^\s']+)
+              captures:
+                1: invalid
+              pop: true
         - match: "'"
           captures:
             1: punctuation.definition.string.end.dockerfile
           pop: true
         - match: \\.
           scope: constant.character.escaped.dockerfile
+  comments:
     - match: ^(\s*)((#).*$\n?)
       comment: comment.line
       captures:
