@@ -17,6 +17,10 @@ enjoy.
 
 ### Changelog
 
+#### 1.3.0
+
+* Added invalid newlines highlighting
+
 #### 1.2.0
 
 * Updated with latest keywords
