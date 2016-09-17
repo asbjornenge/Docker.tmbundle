@@ -7,13 +7,14 @@ file_extensions:
 scope: source.dockerfile
 
 variables:
-  build_directive: (?:(ONBUILD)\s+)?(ADD|ARG|COPY|ENV|EXPOSE|HEALTHCHECK|LABEL|MAINTAINER|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR)
+  noonbuild_directive: (FROM|MAINTAINER)
+  build_directive: (?:(ONBUILD)\s+)?(ADD|ARG|COPY|ENV|EXPOSE|HEALTHCHECK|LABEL|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR)
   runtime_directive: (?:(ONBUILD)\s+)?(CMD|ENTRYPOINT)
 
 contexts:
   main:
     - include: comments
-    - match: '^FROM\s'
+    - match: '^\s*{{noonbuild_directive}}\s'
       captures:
         0: keyword.control.dockerfile
       push: body
@@ -36,7 +37,9 @@ contexts:
       push: args
 
   args:
+    - match: ^\s*$
     - match: \\\s+$
+    - include: comments
     - match: \n
       pop: true
     - match: '"'
@@ -50,6 +53,7 @@ contexts:
 
   double_quote_string:
     - meta_scope: string.quoted.double.dockerfile
+    - match: ^\s*$
     - match: \\\s+$
     - match: \n
       set: invalid
@@ -62,6 +66,7 @@ contexts:
 
   single_quote_string:
     - meta_scope: string.quoted.single.dockerfile
+    - match: ^\s*$
     - match: \\\s+$
     - match: \n
       set: invalid
