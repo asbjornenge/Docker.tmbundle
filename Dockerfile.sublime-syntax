@@ -5,41 +5,83 @@ name: Dockerfile
 file_extensions:
   - Dockerfile
 scope: source.dockerfile
+
+variables:
+  build_directive: (?:(ONBUILD)\s+)?(ADD|ARG|COPY|ENV|EXPOSE|HEALTHCHECK|LABEL|MAINTAINER|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR)
+  runtime_directive: (?:(ONBUILD)\s+)?(CMD|ENTRYPOINT)
+
 contexts:
   main:
-    - match: ^\s*(?:(ONBUILD)\s+)?(ADD|ARG|COPY|ENV|EXPOSE|FROM|HEALTHCHECK|LABEL|MAINTAINER|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR)\s
+    - include: comments
+    - match: '^FROM\s'
       captures:
-        1: keyword.control.dockerfile
-        2: keyword.other.special-method.dockerfile
-    - match: ^\s*(?:(ONBUILD)\s+)?(CMD|ENTRYPOINT)\s
+        0: keyword.control.dockerfile
+      push: body
+
+  body:
+    - include: comments
+    - include: directives
+    - include: invalid
+
+  directives:
+    - match: ^\s*{{build_directive}}\s
       captures:
-        1: keyword.operator.dockerfile
-        2: keyword.other.special-method.dockerfile
+        0: keyword.control.dockerfile
+        1: keyword.other.special-method.dockerfile
+      push: args
+    - match: ^\s*{{runtime_directive}}\s
+      captures:
+        0: keyword.operator.dockerfile
+        1: keyword.other.special-method.dockerfile
+      push: args
+
+  args:
+    - match: \\\s+$
+    - match: \n
+      pop: true
     - match: '"'
       captures:
-        1: punctuation.definition.string.begin.dockerfile
-      push:
-        - meta_scope: string.quoted.double.dockerfile
-        - match: '"'
-          captures:
-            1: punctuation.definition.string.end.dockerfile
-          pop: true
-        - match: \\.
-          scope: constant.character.escaped.dockerfile
+        0: punctuation.definition.string.begin.dockerfile
+      push: double_quote_string
     - match: "'"
       captures:
-        1: punctuation.definition.string.begin.dockerfile
-      push:
-        - meta_scope: string.quoted.single.dockerfile
-        - match: "'"
-          captures:
-            1: punctuation.definition.string.end.dockerfile
-          pop: true
-        - match: \\.
-          scope: constant.character.escaped.dockerfile
+        0: punctuation.definition.string.begin.dockerfile
+      push: single_quote_string
+
+  double_quote_string:
+    - meta_scope: string.quoted.double.dockerfile
+    - match: \\\s+$
+    - match: \n
+      set: invalid
+    - match: \\.
+      scope: constant.character.escaped.dockerfile
+    - match: '"'
+      captures:
+        0: punctuation.definition.string.end.dockerfile
+      pop: true
+
+  single_quote_string:
+    - meta_scope: string.quoted.single.dockerfile
+    - match: \\\s+$
+    - match: \n
+      set: invalid
+    - match: \\.
+      scope: constant.character.escaped.dockerfile
+    - match: "'"
+      captures:
+        0: punctuation.definition.string.end.dockerfile
+      pop: true
+
+  comments:
     - match: ^(\s*)((#).*$\n?)
       comment: comment.line
       captures:
         1: punctuation.whitespace.comment.leading.dockerfile
-        2: comment.line.number-sign.dockerfile
+        2: comment.dockerfile
         3: punctuation.definition.comment.dockerfile
+
+  invalid:
+    - match: ^[^A-Z\n](.*)$
+      captures:
+        0: invalid
+      set: body
