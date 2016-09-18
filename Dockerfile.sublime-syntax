@@ -13,7 +13,7 @@ variables:
 contexts:
   main:
     - include: comments
-    - match: '^FROM\s'
+    - match: ^FROM\s
       captures:
         0: keyword.control.dockerfile
       push: body
@@ -36,7 +36,9 @@ contexts:
       push: args
 
   args:
+    - match: ^\s*$
     - match: \\\s+$
+    - include: comments
     - match: \n
       pop: true
     - match: '"'
@@ -50,6 +52,7 @@ contexts:
 
   double_quote_string:
     - meta_scope: string.quoted.double.dockerfile
+    - match: ^\s*$
     - match: \\\s+$
     - match: \n
       set: invalid
@@ -62,6 +65,7 @@ contexts:
 
   single_quote_string:
     - meta_scope: string.quoted.single.dockerfile
+    - match: ^\s*$
     - match: \\\s+$
     - match: \n
       set: invalid
