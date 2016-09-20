@@ -35,10 +35,15 @@ contexts:
         1: keyword.other.special-method.dockerfile
       push: args
 
+  escaped-char:
+    - match: \\.
+      scope: constant.character.escaped.dockerfile
+
   args:
+    - include: comments
+    - include: escaped-char
     - match: ^\s*$
     - match: \\\s+$
-    - include: comments
     - match: \n
       pop: true
     - match: '"'
@@ -52,12 +57,11 @@ contexts:
 
   double_quote_string:
     - meta_scope: string.quoted.double.dockerfile
+    - include: escaped-char
     - match: ^\s*$
     - match: \\\s+$
     - match: \n
       set: invalid
-    - match: \\.
-      scope: constant.character.escaped.dockerfile
     - match: '"'
       captures:
         0: punctuation.definition.string.end.dockerfile
@@ -65,12 +69,11 @@ contexts:
 
   single_quote_string:
     - meta_scope: string.quoted.single.dockerfile
+    - include: escaped-char
     - match: ^\s*$
     - match: \\\s+$
     - match: \n
       set: invalid
-    - match: \\.
-      scope: constant.character.escaped.dockerfile
     - match: "'"
       captures:
         0: punctuation.definition.string.end.dockerfile
