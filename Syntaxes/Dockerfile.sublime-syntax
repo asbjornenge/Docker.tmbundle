@@ -14,8 +14,7 @@ contexts:
   main:
     - include: comments
     - match: ^FROM\s
-      captures:
-        0: keyword.control.dockerfile
+      scope: keyword.control.dockerfile
       push: body
 
   body:
@@ -47,12 +46,10 @@ contexts:
     - match: \n
       pop: true
     - match: '"'
-      captures:
-        0: punctuation.definition.string.begin.dockerfile
+      scope: punctuation.definition.string.begin.dockerfile
       push: double_quote_string
     - match: "'"
-      captures:
-        0: punctuation.definition.string.begin.dockerfile
+      scope: punctuation.definition.string.begin.dockerfile
       push: single_quote_string
 
   double_quote_string:
@@ -63,8 +60,7 @@ contexts:
     - match: \n
       set: invalid
     - match: '"'
-      captures:
-        0: punctuation.definition.string.end.dockerfile
+      scope: punctuation.definition.string.end.dockerfile
       pop: true
 
   single_quote_string:
@@ -75,8 +71,7 @@ contexts:
     - match: \n
       set: invalid
     - match: "'"
-      captures:
-        0: punctuation.definition.string.end.dockerfile
+      scope: punctuation.definition.string.end.dockerfile
       pop: true
 
   comments:
@@ -89,6 +84,5 @@ contexts:
 
   invalid:
     - match: ^[^A-Z\n](.*)$
-      captures:
-        0: invalid
+      scope: invalid
       set: body
