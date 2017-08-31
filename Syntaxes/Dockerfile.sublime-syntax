@@ -10,18 +10,29 @@ scope: source.dockerfile
 variables:
   build_directive: ((?:(ONBUILD)\s+)?(ADD|ARG|COPY|ENV|EXPOSE|HEALTHCHECK|LABEL|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR))|(MAINTAINER)
   runtime_directive: (?:(ONBUILD)\s+)?(CMD|ENTRYPOINT)
+  from_directive: (FROM)\s+[a-z0-9_.-]+([:@]([a-z0-9_.-]+))?(\s+(AS)\s+([a-z0-9_.-]+))?
 
 contexts:
   main:
     - include: comments
-    - match: ^FROM\s
+    - match: ^ARG\s
       scope: keyword.control.dockerfile
+    - include: from
+
+  from:
+    - match: ^{{from_directive}}
+      captures:
+        1: keyword.control.dockerfile
+        3: entity.name.enum.tag_digest
+        5: keyword.control.dockerfile
+        6: variable.stage_name
       push: body
 
   body:
     - include: comments
     - include: directives
     - include: invalid
+    - include: from
 
   directives:
     - match: ^\s*{{build_directive}}\s
