@@ -8,7 +8,7 @@ first_line_match: \s*(FROM|ARG)\s
 scope: source.dockerfile
 
 variables:
-  build_directive: (?:(ONBUILD)\s+)?(ADD|ARG|COPY|ENV|EXPOSE|HEALTHCHECK|LABEL|MAINTAINER|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR)
+  build_directive: ((?:(ONBUILD)\s+)?(ADD|ARG|COPY|ENV|EXPOSE|HEALTHCHECK|LABEL|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR))|(MAINTAINER)
   runtime_directive: (?:(ONBUILD)\s+)?(CMD|ENTRYPOINT)
 
 contexts:
