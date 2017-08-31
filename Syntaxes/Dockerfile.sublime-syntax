@@ -8,8 +8,9 @@ first_line_match: \s*(FROM|ARG)\s
 scope: source.dockerfile
 
 variables:
-  build_directive: ((?:(ONBUILD)\s+)?(ADD|ARG|COPY|ENV|EXPOSE|HEALTHCHECK|LABEL|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR))|(MAINTAINER)
-  runtime_directive: (?:(ONBUILD)\s+)?(CMD|ENTRYPOINT)
+  onbuild_directive: (?:(ONBUILD)\s+)?
+  build_directive: ({{onbuild_directive}}(ADD|ARG|COPY|ENV|EXPOSE|HEALTHCHECK|LABEL|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR))|(MAINTAINER)
+  runtime_directive: ({{onbuild_directive}})(CMD|ENTRYPOINT)
   from_directive: (FROM)\s+[a-z0-9_.-]+([:@]([a-z0-9_.-]+))?(\s+(AS)\s+([a-z0-9_.-]+))?
 
 contexts:
@@ -38,12 +39,12 @@ contexts:
     - match: ^\s*{{build_directive}}\s
       captures:
         0: keyword.control.dockerfile
-        1: keyword.other.special-method.dockerfile
+        2: keyword.other.special-method.dockerfile
       push: args
     - match: ^\s*{{runtime_directive}}\s
       captures:
         0: keyword.operator.dockerfile
-        1: keyword.other.special-method.dockerfile
+        2: keyword.other.special-method.dockerfile
       push: args
 
   escaped-char:
