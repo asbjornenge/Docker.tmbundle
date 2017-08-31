@@ -9,9 +9,10 @@ scope: source.dockerfile
 
 variables:
   onbuild_directive: (?:(ONBUILD)\s+)?
-  build_directive: ({{onbuild_directive}}(ADD|ARG|COPY|ENV|EXPOSE|HEALTHCHECK|LABEL|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR))|(MAINTAINER)
+  build_directive: ({{onbuild_directive}}(ADD|ARG|ENV|EXPOSE|HEALTHCHECK|LABEL|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR))|(MAINTAINER)
   runtime_directive: ({{onbuild_directive}})(CMD|ENTRYPOINT)
   from_directive: (FROM)\s+[a-z0-9_.-]+([:@]([a-z0-9_.-]+))?(\s+(AS)\s+([a-z0-9_.-]+))?
+  copy_directive: ({{onbuild_directive}}(COPY)(\s+--from=([a-z0-9_.-]+))?)
 
 contexts:
   main:
@@ -40,6 +41,11 @@ contexts:
       captures:
         0: keyword.control.dockerfile
         2: keyword.other.special-method.dockerfile
+      push: args
+    - match: ^\s*{{copy_directive}}\s
+      captures:
+        3: keyword.control.dockerfile
+        5: variable.stage_name
       push: args
     - match: ^\s*{{runtime_directive}}\s
       captures:
