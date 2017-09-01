@@ -4,6 +4,7 @@
 name: Dockerfile
 file_extensions:
   - Dockerfile
+first_line_match: \s*(FROM|ARG)\s
 scope: source.dockerfile
 
 variables:
