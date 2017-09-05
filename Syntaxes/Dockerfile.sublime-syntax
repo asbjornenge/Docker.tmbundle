@@ -8,26 +8,49 @@ first_line_match: \s*(FROM|ARG)\s
 scope: source.dockerfile
 
 variables:
-  build_directive: (?:(ONBUILD)\s+)?(ADD|ARG|COPY|ENV|EXPOSE|HEALTHCHECK|LABEL|MAINTAINER|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR)
-  runtime_directive: (?:(ONBUILD)\s+)?(CMD|ENTRYPOINT)
+  onbuild_directive: (?:(ONBUILD)\s+)?
+  onbuild_commands_directive: "{{onbuild_directive}}(?:ADD|ARG|ENV|EXPOSE|HEALTHCHECK|LABEL|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR)"
+  nononbuild_commands_directive: MAINTAINER
+  runtime_directive: "{{onbuild_directive}}(?:CMD|ENTRYPOINT)"
+  from_directive: (FROM)\s+[^\s:@]+(?:[:@](\S+))?(?:\s+(AS)\s+(\S+))?
+  copy_directive: ({{onbuild_directive}}COPY)(?:\s+--from=(\S+))?
 
 contexts:
   main:
     - include: comments
-    - match: ^FROM\s
+    - match: ^ARG\s
       scope: keyword.control.dockerfile
+    - include: from
+
+  from:
+    - match: ^{{from_directive}}
+      captures:
+        1: keyword.control.dockerfile
+        2: entity.name.enum.tag-digest
+        3: keyword.control.dockerfile
+        4: variable.stage-name
       push: body
 
   body:
     - include: comments
     - include: directives
     - include: invalid
+    - include: from
 
   directives:
-    - match: ^\s*{{build_directive}}\s
+    - match: ^\s*{{onbuild_commands_directive}}\s
       captures:
         0: keyword.control.dockerfile
         1: keyword.other.special-method.dockerfile
+      push: args
+    - match: ^\s*{{nononbuild_commands_directive}}\s
+      scope: keyword.control.dockerfile
+      push: args
+    - match: ^\s*{{copy_directive}}\s
+      captures:
+        1: keyword.control.dockerfile
+        2: keyword.other.special-method.dockerfile
+        3: variable.stage-name
       push: args
     - match: ^\s*{{runtime_directive}}\s
       captures:
