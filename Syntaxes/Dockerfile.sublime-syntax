@@ -12,8 +12,8 @@ variables:
   onbuild_commands_directive: "{{onbuild_directive}}(?:ADD|ARG|ENV|EXPOSE|HEALTHCHECK|LABEL|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR)"
   nononbuild_commands_directive: MAINTAINER
   runtime_directive: "{{onbuild_directive}}(?:CMD|ENTRYPOINT)"
-  from_directive: (FROM)\s+\w+(?:[:@](\w+))?(?:\s+(AS)\s+(\w+))?
-  copy_directive: ({{onbuild_directive}}COPY)(?:\s+--from=(\w+))?
+  from_directive: (FROM)\s+[^\s:@]+(?:[:@](\S+))?(?:\s+(AS)\s+(\S+))?
+  copy_directive: ({{onbuild_directive}}COPY)(?:\s+--from=(\S+))?
 
 contexts:
   main:
