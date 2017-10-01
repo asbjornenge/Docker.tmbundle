@@ -4,21 +4,23 @@
 name: Dockerfile
 file_extensions:
   - Dockerfile
-first_line_match: \s*(FROM|ARG)\s
+  - dockerfile
+first_line_match: \s*(?i:(from|arg))\s
 scope: source.dockerfile
 
 variables:
-  onbuild_directive: (?:(ONBUILD)\s+)?
-  onbuild_commands_directive: "{{onbuild_directive}}(?:ADD|ARG|ENV|EXPOSE|HEALTHCHECK|LABEL|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR)"
-  nononbuild_commands_directive: MAINTAINER
-  runtime_directive: "{{onbuild_directive}}(?:CMD|ENTRYPOINT)"
-  from_directive: (FROM)\s+[^\s:@]+(?:[:@](\S+))?(?:\s+(AS)\s+(\S+))?
-  copy_directive: ({{onbuild_directive}}COPY)(?:\s+--from=(\S+))?
+  onbuild_directive: (?i:(onbuild)\s+)?
+  onbuild_commands_directive:
+    "{{onbuild_directive}}(?i:add|arg|env|expose|healthcheck|label|run|shell|stopsignal|user|volume|workdir)"
+  nononbuild_commands_directive: (?i:maintainer)
+  runtime_directive: "{{onbuild_directive}}(?i:cmd|entrypoint)"
+  from_directive: (?i:(from))\s+[^\s:@]+(?:[:@](\S+))?(?:\s+(?i:(as))\s+(\S+))?
+  copy_directive: ({{onbuild_directive}}(?i:copy))(?:\s+--from=(\S+))?
 
 contexts:
   main:
     - include: comments
-    - match: ^ARG\s
+    - match: ^(?i:arg)\s
       scope: keyword.control.dockerfile
     - include: from
 
