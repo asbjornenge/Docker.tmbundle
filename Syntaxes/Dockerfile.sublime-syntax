@@ -71,7 +71,7 @@ contexts:
           set: scope:source.shell.bash
           with_prototype:
             - include: scope:source.shell.bash#prototype
-            - match: \n
+            - match: \n|^(?=\S)
               pop: true
     - match: ^\s*{{onbuild_commands_directive}}\s
       captures:
