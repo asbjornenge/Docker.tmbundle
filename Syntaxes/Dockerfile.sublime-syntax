@@ -9,79 +9,106 @@ first_line_match: ^\s*(?i:(from(?!\s+\S+\s+import)|arg))\s+
 scope: source.dockerfile
 
 variables:
-  identifier: '[[:alnum:]]+'
   onbuild_directive: (?i:(onbuild)\s+)?
   onbuild_commands_directive:
-    "{{onbuild_directive}}(?i:add|arg|env|copy|expose|healthcheck|label|shell|stopsignal|user|volume|workdir)"
+    "{{onbuild_directive}}(?i:add|arg|env|expose|healthcheck|label|run|shell|stopsignal|user|volume|workdir)"
   nononbuild_commands_directive: (?i:maintainer)
-  embeddable_directive: '{{onbuild_directive}}(?i:run|cmd|entrypoint)'
+  runtime_directive: "{{onbuild_directive}}(?i:cmd|entrypoint)"
   from_directive: (?i:(from))\s+[^\s:@]+(?:[:@](\S+))?(?:\s+(?i:(as))\s+(\S+))?
+  copy_directive: ({{onbuild_directive}}(?i:copy))(?:\s+--from=(\S+))?
 
 contexts:
-  prototype:
-    - include: scope:source.shell.bash#prototype
-
   main:
+    - include: comments
     - match: ^(?i:arg)\s
       scope: keyword.control.dockerfile
     - include: from
 
-  expect-container-tag:
-    - match: ({{identifier}})(?:([:@])(\S+))?
-      captures:
-        1: entity.name.label.dockerfile
-        2: punctuation.separator.dockerfile
-        3: constant.numeric.dockerfile
-      pop: true
-
-  optional-as:
-    - match: (?i)\s*as\b
-      scope: keyword.control.dockerfile
-      set:
-        - match: \S+
-          scope: variable.stage-name.dockerfile
-          pop: true
-        - match: $
-          pop: true
-    - match: ""
-      pop: true
-
   from:
-    - match: ^\s*(?i:(from))\b
+    - match: ^{{from_directive}}
       captures:
         1: keyword.control.dockerfile
-      set: [body, optional-as, expect-container-tag]
+        2: entity.name.enum.tag-digest
+        3: keyword.control.dockerfile
+        4: variable.stage-name
+      push: body
 
   body:
+    - include: comments
     - include: directives
-    - include: from
     - include: invalid
+    - include: from
 
   directives:
-    - match: ^\s*({{embeddable_directive}})\b
-      captures:
-        1: keyword.control.dockerfile
-      push:
-        - match: (?=\s*\[)
-          set: scope:source.json#array
-          with_prototype:
-            - match: \n
-              pop: true
-        - match: ""
-          set: scope:source.shell.bash
-          with_prototype:
-            - include: scope:source.shell.bash#prototype
-            - match: \n|^(?=\S)
-              pop: true
     - match: ^\s*{{onbuild_commands_directive}}\s
       captures:
         0: keyword.control.dockerfile
         1: keyword.other.special-method.dockerfile
-      push: scope:source.shell.bash#cmd-args
+      push: args
     - match: ^\s*{{nononbuild_commands_directive}}\s
       scope: keyword.control.dockerfile
-      push: scope:source.shell.bash#cmd-args
+      push: args
+    - match: ^\s*{{copy_directive}}\s
+      captures:
+        1: keyword.control.dockerfile
+        2: keyword.other.special-method.dockerfile
+        3: variable.stage-name
+      push: args
+    - match: ^\s*{{runtime_directive}}\s
+      captures:
+        0: keyword.operator.dockerfile
+        1: keyword.other.special-method.dockerfile
+      push: args
+
+  escaped-char:
+    - match: \\.
+      scope: constant.character.escaped.dockerfile
+
+  args:
+    - include: comments
+    - include: escaped-char
+    - match: ^\s*$
+    - match: \\\s+$
+    - match: \n
+      pop: true
+    - match: '"'
+      scope: punctuation.definition.string.begin.dockerfile
+      push: double_quote_string
+    - match: "'"
+      scope: punctuation.definition.string.begin.dockerfile
+      push: single_quote_string
+
+  double_quote_string:
+    - meta_scope: string.quoted.double.dockerfile
+    - include: escaped-char
+    - match: ^\s*$
+    - match: \\\s+$
+    - match: \n
+      set: invalid
+    - match: '"'
+      scope: punctuation.definition.string.end.dockerfile
+      pop: true
+
+  single_quote_string:
+    - meta_scope: string.quoted.single.dockerfile
+    - include: escaped-char
+    - match: ^\s*$
+    - match: \\\s+$
+    - match: \n
+      set: invalid
+    - match: "'"
+      scope: punctuation.definition.string.end.dockerfile
+      pop: true
+
+  comments:
+    - match: ^(\s*)((#).*$\n?)
+      comment: comment.line
+      captures:
+        1: punctuation.whitespace.comment.leading.dockerfile
+        2: comment.dockerfile
+        3: punctuation.definition.comment.dockerfile
 
   invalid:
     - match: ^[^A-Z\n](.*)$
-      scope: invalid.illegal.dockerfile
+      scope: invalid
+      set: body
