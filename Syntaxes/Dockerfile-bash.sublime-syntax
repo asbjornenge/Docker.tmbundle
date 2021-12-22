@@ -1,6 +1,6 @@
 %YAML 1.2
 ---
-# http://www.sublimetext.com/docs/3/syntax.html
+# http://www.sublimetext.com/docs/syntax.html
 name: Dockerfile (with bash)
 
 scope: source.dockerfile.bash
@@ -15,16 +15,13 @@ variables:
   from_directive: (?i:(from))\s+[^\s:@]+(?:[:@](\S+))?(?:\s+(?i:(as))\s+(\S+))?
 
 contexts:
-  prototype:
-    - include: scope:source.shell.bash#prototype
-
   main:
     - match: ^(?i:arg)\s
       scope: keyword.control.dockerfile
     - include: from
 
   expect-container-tag:
-    - match: ({{identifier}})(?:([:@])(\S+))?
+    - match: ({{identifier}}(?:/{{identifier}})?)(?:([:@])(\S+))?
       captures:
         1: entity.name.label.dockerfile
         2: punctuation.separator.dockerfile
