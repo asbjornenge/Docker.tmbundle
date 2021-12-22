@@ -1,0 +1,28 @@
+name: Syntax Tests
+
+on:
+  push:
+    paths:
+      - '.github/workflows/test.yml'
+      - '**.sublime-syntax'
+      - '**/syntax_test*'
+      - '**.tmPreferences'
+  pull_request:
+    paths:
+      - '.github/workflows/test.yml'
+      - '**.sublime-syntax'
+      - '**/syntax_test*'
+      - '**.tmPreferences'
+
+jobs:
+  syntax_tests:
+    name: Run Syntax Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: SublimeText/syntax-test-action@v2
+        with:
+          build: 4121
+          default_packages: v4121
+          package_name: Dockerfile Syntax Highlighting
