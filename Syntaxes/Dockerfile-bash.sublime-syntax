@@ -16,6 +16,7 @@ variables:
 
 contexts:
   main:
+    - include: comments
     - match: ^(?i:arg)\s
       scope: keyword.control.dockerfile
     - include: from
@@ -47,6 +48,7 @@ contexts:
       set: [body, optional-as, expect-container-tag]
 
   body:
+    - include: comments
     - include: directives
     - include: from
     - include: invalid
@@ -79,3 +81,11 @@ contexts:
   invalid:
     - match: ^[^A-Z\n](.*)$
       scope: invalid.illegal.dockerfile
+
+  comments:
+    - match: ^(\s*)((#).*$\n?)
+      comment: comment.line
+      captures:
+        1: punctuation.whitespace.comment.leading.dockerfile
+        2: comment.dockerfile
+        3: punctuation.definition.comment.dockerfile
