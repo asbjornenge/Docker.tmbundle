@@ -29,23 +29,14 @@ contexts:
         3: constant.numeric.dockerfile
       pop: true
 
-  optional-as:
-    - match: (?i)\s*as\b
-      scope: keyword.control.dockerfile
-      set:
-        - match: \S+
-          scope: variable.stage-name.dockerfile
-          pop: true
-        - match: $
-          pop: true
-    - match: ""
-      pop: true
-
   from:
-    - match: ^\s*(?i:(from))\b
+    - match: ^{{from_directive}}
       captures:
         1: keyword.control.dockerfile
-      set: [body, optional-as, expect-container-tag]
+        2: entity.name.enum.tag-digest
+        3: keyword.control.dockerfile
+        4: variable.stage-name
+      push: body
 
   body:
     - include: comments
