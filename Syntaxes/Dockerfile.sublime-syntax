@@ -2,11 +2,16 @@
 ---
 # http://www.sublimetext.com/docs/3/syntax.html
 name: Dockerfile
+scope: source.dockerfile
+
 file_extensions:
   - Dockerfile
   - dockerfile
+
+hidden_file_extensions:
+  - .Dockerfile
+
 first_line_match: ^\s*(?i:(from(?!\s+\S+\s+import)|arg))\s+
-scope: source.dockerfile
 
 variables:
   onbuild_directive: (?i:(onbuild)\s+)?
