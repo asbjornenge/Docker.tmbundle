@@ -50,7 +50,7 @@ contexts:
         1: keyword.control.dockerfile
       push:
         - match: (?=\s*\[)
-          set: scope:source.json#array
+          set: scope:source.json#arrays
           with_prototype:
             - match: \n
               pop: true
