@@ -32,7 +32,7 @@ contexts:
   from:
     - match: ^{{from_directive}}
       captures:
-        1: keyword.control.dockerfile
+        1: keyword.control.from.dockerfile
         2: entity.name.enum.tag-digest
         3: keyword.control.dockerfile
         4: variable.stage-name
